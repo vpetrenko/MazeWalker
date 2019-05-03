@@ -22,6 +22,11 @@ enum LevelItem {
     case door
 }
 
+enum ActiveItem {
+    case none
+    case crown(sprite: SKSpriteNode?)
+}
+
 enum Direction {
     case left
     case right
@@ -44,8 +49,8 @@ class GameScene: SKScene {
 D11111111111111111111111111111111111111D
 1                                      1
 1    1                                 1
-1 1 1                                  1
-1  1                                   1
+1 1 1C                                 1
+1  1C                                  1
 1                                      1
 1                                      1
 1                                      1
@@ -62,12 +67,14 @@ D11111111111111111111111111111111111111D
 """
    
     private var level : [[LevelItem]]
+    private var items : [[ActiveItem]]
     private var width = 0
     private var height = 0
 
     private var px = 0
     private var py = 0
     private var playerSprite = SKSpriteNode()
+    private var playerScore = 0
 
     private let directs: [Direction: (Double, Double)] = [
         .left: (-2.0, 0),
@@ -90,6 +97,7 @@ D11111111111111111111111111111111111111D
         height = levelMap.reduce(0, { $1 == "\n" ? $0 + 1 : $0 } ) + 1
         
         level = Array(repeating: Array(repeating: .space, count: height), count: width)
+        items = Array(repeating: Array(repeating: .none, count: height), count: width)
         var x = 0
         var y = 0
         for ch in levelMap {
@@ -101,6 +109,8 @@ D11111111111111111111111111111111111111D
                 level[x][y] = .wall
             case "D":
                 level[x][y] = .door
+            case "C":
+                items[x][y] = .crown(sprite: nil)
             case " ":
                 level[x][y] = .space
             default:
@@ -116,11 +126,11 @@ D11111111111111111111111111111111111111D
     override func didMove(to view: SKView) {
         
         // Get label node from scene and store it for use later
-//        self.label = self.childNode(withName: "//helloLabel") as? SKLabelNode
-//        if let label = self.label {
-//            label.alpha = 0.0
-//            label.run(SKAction.fadeIn(withDuration: 2.0))
-//        }
+        self.label = self.childNode(withName: "//helloLabel") as? SKLabelNode
+        if let label = self.label {
+            label.alpha = 0.0
+            label.run(SKAction.fadeIn(withDuration: 2.0))
+        }
         
         // Create shape node to use during mouse interaction
         let w = (self.size.width + self.size.height) * 0.05
@@ -134,6 +144,7 @@ D11111111111111111111111111111111111111D
                                               SKAction.fadeOut(withDuration: 0.5),
                                               SKAction.removeFromParent()]))
         }
+        
         
         playerSprite = SKSpriteNode(imageNamed: "rocket")
         playerSprite.size = CGSize(width: 48, height: 60)
@@ -156,6 +167,26 @@ D11111111111111111111111111111111111111D
                 title.position = CGPoint(x: 24 + x * 48, y: 30 + y * 60)
                 self.addChild(title)
                 self.walls.append(title)
+            }
+        }
+        for (x, col) in items.enumerated() {
+            for (y, t) in col.enumerated() {
+                var item = SKSpriteNode()
+                var gotItem = false
+                switch (t) {
+                case .crown:
+                    item = SKSpriteNode(imageNamed: "crown")
+                    items[x][y] = .crown(sprite: item)
+                    gotItem = true
+                default:
+                    gotItem = false
+                }
+                if gotItem {
+                    item.size = CGSize(width: tileWidth, height: tileHeight)
+                    item.position = CGPoint(x: 24 + x * 48, y: 30 + y * 60)
+                    item.zPosition = 50
+                    self.addChild(item)
+                }
             }
         }
     }
@@ -237,6 +268,10 @@ D11111111111111111111111111111111111111D
                 playerDirection = newPlayerDirection
             }
         }
+        if let label = self.label {
+            label.text = "Player score: \(playerScore)"
+        }
+
         if currentTime - lastTime > 0.001 {
             let newX = playerSprite.position.x + CGFloat(directs[playerDirection]!.0)
             let newY = playerSprite.position.y + CGFloat(directs[playerDirection]!.1)
@@ -246,17 +281,18 @@ D11111111111111111111111111111111111111D
             
             let intX = playerDirection == .right ? Int(ceil(tileX)) : Int(tileX)
             let intY = playerDirection == .up ? Int(ceil(tileY)) : Int(tileY)
-//            if playerDirection == .right {
-//                tileX += 1
-//            }
-//
-//            if playerDirection == .up {
-//                tileY += 1
-//            }
             
             if level[intX][intY] == .space {
                 playerSprite.position.x = newX
                 playerSprite.position.y = newY
+            }
+            switch (items[intX][intY]) {
+            case .crown(let sprite):
+                playerScore += 100
+                sprite?.removeFromParent()
+                items[intX][intY] = .none
+            default:
+                break
             }
             
             lastTime = currentTime
