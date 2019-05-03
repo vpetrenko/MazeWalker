@@ -206,47 +206,6 @@ D11111111111111111111111111111111111111D
     }
     
     
-//    func touchDown(atPoint pos : CGPoint) {
-//        print("touchDown: \(pos)")
-//        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-//            n.position = pos
-//            n.strokeColor = SKColor.green
-//            self.addChild(n)
-//        }
-//    }
-//
-//    func touchMoved(toPoint pos : CGPoint) {
-//        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-//            n.position = pos
-//            n.strokeColor = SKColor.blue
-//            self.addChild(n)
-//        }
-//    }
-//
-//    func touchUp(atPoint pos : CGPoint) {
-//        let rocket = SKSpriteNode(imageNamed: "rocket")
-//        rocket.position = pos
-//        self.addChild(rocket)
-//        self.rockets.append(rocket)
-//        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-//            n.position = pos
-//            n.strokeColor = SKColor.red
-//            self.addChild(n)
-//        }
-//    }
-    
-//    override func mouseDown(with event: NSEvent) {
-//        self.touchDown(atPoint: event.location(in: self))
-//    }
-//
-//    override func mouseDragged(with event: NSEvent) {
-//        self.touchMoved(toPoint: event.location(in: self))
-//    }
-//
-//    override func mouseUp(with event: NSEvent) {
-//        self.touchUp(atPoint: event.location(in: self))
-//    }
-    
     func generateEnemy() {
         let enemy = Enemy()
         let x = Int.random(in: 1..<39)
@@ -261,13 +220,6 @@ D11111111111111111111111111111111111111D
         case 0x31:
             break
             
-//            if let label = self.label {
-//                label.run(SKAction.init(named: "Pulse")!, withKey: "fadeInOut")
-//            }
-//            for x in self.rockets {
-//                x.removeFromParent()
-//            }
-//            self.rockets.removeAll()
         case KeyCodes.up.rawValue:
             newPlayerDirection = .up
         case KeyCodes.down.rawValue:
