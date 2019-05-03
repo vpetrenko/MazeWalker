@@ -14,6 +14,10 @@ enum KeyCodes : UInt16 {
     case down = 125
     case left = 123
     case right = 124
+    case fireLeft = 0
+    case fireRight = 2
+    case fireUp = 13
+    case fireDown = 1
 }
 
 enum LevelItem {
@@ -44,6 +48,8 @@ class GameScene: SKScene {
     private var rockets = [SKSpriteNode]()
 
     private var walls = [SKSpriteNode]()
+    
+    private var enemies = Set<Enemy>()
 
     private var levelMap = """
 D11111111111111111111111111111111111111D
@@ -75,7 +81,11 @@ D11111111111111111111111111111111111111D
     private var py = 0
     private var playerSprite = SKSpriteNode()
     private var playerScore = 0
+    private var playerTags = 50.0
 
+    private var bullets = Set<Bullet>()
+
+    
     private let directs: [Direction: (Double, Double)] = [
         .left: (-2.0, 0),
         .right: (2.0, 0),
@@ -130,6 +140,7 @@ D11111111111111111111111111111111111111D
         if let label = self.label {
             label.alpha = 0.0
             label.run(SKAction.fadeIn(withDuration: 2.0))
+            label.zPosition = 200
         }
         
         // Create shape node to use during mouse interaction
@@ -146,7 +157,7 @@ D11111111111111111111111111111111111111D
         }
         
         
-        playerSprite = SKSpriteNode(imageNamed: "rocket")
+        playerSprite = SKSpriteNode(imageNamed: "man1")
         playerSprite.size = CGSize(width: 48, height: 60)
         playerSprite.position = CGPoint(x: 24 + 48, y: 30 + 60)
         playerSprite.zPosition = 100
@@ -189,6 +200,9 @@ D11111111111111111111111111111111111111D
                 }
             }
         }
+        let backgroundMusic = SKAudioNode(fileNamed: "ByTheWall.mp3")
+        backgroundMusic.autoplayLooped = true
+        addChild(backgroundMusic)
     }
     
     
@@ -236,13 +250,20 @@ D11111111111111111111111111111111111111D
     override func keyDown(with event: NSEvent) {
         switch event.keyCode {
         case 0x31:
+            let enemy = Enemy()
+            let x = Int.random(in: 1..<39)
+            let y = Int.random(in: 1..<17)
+            enemy.position = CGPoint(x: 24 + x * 48, y: 30 + y * 60)
+            enemies.insert(enemy)
+            self.addChild(enemy.sprite)
+            
 //            if let label = self.label {
 //                label.run(SKAction.init(named: "Pulse")!, withKey: "fadeInOut")
 //            }
-            for x in self.rockets {
-                x.removeFromParent()
-            }
-            self.rockets.removeAll()
+//            for x in self.rockets {
+//                x.removeFromParent()
+//            }
+//            self.rockets.removeAll()
         case KeyCodes.up.rawValue:
             newPlayerDirection = .up
         case KeyCodes.down.rawValue:
@@ -251,12 +272,29 @@ D11111111111111111111111111111111111111D
             newPlayerDirection = .left
         case KeyCodes.right.rawValue:
             newPlayerDirection = .right
+        case KeyCodes.fireUp.rawValue:
+            fire(.up)
+        case KeyCodes.fireDown.rawValue:
+            fire(.down)
+        case KeyCodes.fireLeft.rawValue:
+            fire(.left)
+        case KeyCodes.fireRight.rawValue:
+            fire(.right)
         default:
             print("keyDown: \(event.characters!) keyCode: \(event.keyCode)")
         }
     }
     
     var lastTime = 0.0
+    
+    func fire(_ dir: Direction) {
+        let bullet = Bullet()
+        bullet.direction = dir
+        bullet.position = playerSprite.position
+        bullets.insert(bullet)
+        self.addChild(bullet.sprite)
+        run(SKAction.playSoundFileNamed("Launch 001.wav", waitForCompletion: false))
+    }
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
@@ -269,7 +307,7 @@ D11111111111111111111111111111111111111D
             }
         }
         if let label = self.label {
-            label.text = "Player score: \(playerScore)"
+            label.text = "Score: \(playerScore)   Tags: \(Int(playerTags))"
         }
 
         if currentTime - lastTime > 0.001 {
@@ -291,13 +329,113 @@ D11111111111111111111111111111111111111D
                 playerScore += 100
                 sprite?.removeFromParent()
                 items[intX][intY] = .none
+                run(SKAction.playSoundFileNamed("Water 003.wav", waitForCompletion: false))
             default:
                 break
             }
             
+            for e in enemies {
+                let newX = e.position.x + CGFloat(directs[e.direction]!.0)
+                let newY = e.position.y + CGFloat(directs[e.direction]!.1)
+
+                let playerRect = CGRect(x: playerSprite.position.x - 24, y: playerSprite.position.y - 24, width: 48, height: 60)
+                let enemRect = CGRect(x: newX - 24, y: newY - 30, width: 48, height: 60)
+                if enemRect.intersects(playerRect) {
+                    playerTags -= 0.1
+                    run(SKAction.playSoundFileNamed("Rattle 007.wav", waitForCompletion: false))
+                }
+                
+                let tileX = (newX - 24) / CGFloat(tileWidth)
+                let tileY = (newY - 30) / CGFloat(tileHeight)
+                
+                let intX = e.direction == .right ? Int(ceil(tileX)) : Int(tileX)
+                let intY = e.direction == .up ? Int(ceil(tileY)) : Int(tileY)
+                
+                if level[intX][intY] == .space {
+                    e.position.x = newX
+                    e.position.y = newY
+                }
+
+                var newDir = e.direction
+                switch(Int.random(in: 0..<108)) {
+                case 0:
+                    newDir = .up
+                case 1:
+                    newDir = .down
+                case 2:
+                    newDir = .right
+                case 3:
+                    newDir = .right
+                case 4:
+                    newDir = .right
+                default:
+                    break
+                }
+                
+                if (Int(24 + e.position.x) % tileWidth) == 0 && (newDir == .up || newDir == .down) {
+                    e.direction = newDir
+                }
+                if (Int(30 + e.position.y) % tileHeight) == 0 && (newDir == .left || newDir == .right) {
+                    e.direction = newDir
+                }
+                
+                switch(e.direction) {
+                case .right:
+                    e.sprite.zRotation = 1.57
+                case .up:
+                    e.sprite.zRotation = 3.14
+                case .left:
+                    e.sprite.zRotation = 4.712
+                default:
+                    e.sprite.zRotation = 0
+                }
+
+            }
+
+            var deadBullets = [Bullet]()
+            
+            for e in bullets {
+                let newX = e.position.x + 2 * CGFloat(directs[e.direction]!.0)
+                let newY = e.position.y + 2 * CGFloat(directs[e.direction]!.1)
+                
+                let tileX = (newX - 24) / CGFloat(tileWidth)
+                let tileY = (newY - 30) / CGFloat(tileHeight)
+                
+                let intX = e.direction == .right ? Int(ceil(tileX)) : Int(tileX)
+                let intY = e.direction == .up ? Int(ceil(tileY)) : Int(tileY)
+            
+                var deadEnemies = [Enemy]()
+                for enem in enemies {
+                    var enemPos = enem.position
+                    enemPos.x -= 24
+                    enemPos.y -= 30
+                    let enemRect = CGRect(origin: enemPos, size: CGSize(width: tileWidth, height: tileHeight))
+                    if (enemRect.contains(e.position)) {
+                        deadBullets.append(e)
+                        deadEnemies.append(enem)
+                        enem.sprite.removeFromParent()
+                        enemies.remove(enem)
+                        run(SKAction.playSoundFileNamed("Shot 003.wav", waitForCompletion: false))
+                        playerScore += 5
+                    }
+                }
+                
+                if level[intX][intY] == .space {
+                    e.position.x = newX
+                    e.position.y = newY
+                } else {
+                    deadBullets.append(e)
+                }
+            }
+            
+            for e in deadBullets {
+                e.sprite.removeFromParent()
+                bullets.remove(e)
+            }
+
             lastTime = currentTime
-            print(playerSprite.position)
-            print(tileX, tileY)
+//            print(playerSprite.position)
+//            print(tileX, tileY)
         }
     }
 }
