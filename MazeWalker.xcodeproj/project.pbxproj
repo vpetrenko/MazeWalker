@@ -14,6 +14,9 @@
 		EE0744E3227C8693000989AF /* Launch 001.wav in Resources */ = {isa = PBXBuildFile; fileRef = EE0744E0227C8693000989AF /* Launch 001.wav */; };
 		EE0744E4227C8693000989AF /* Laser 006.wav in Resources */ = {isa = PBXBuildFile; fileRef = EE0744E1227C8693000989AF /* Laser 006.wav */; };
 		EE0744E6227C890F000989AF /* Rattle 007.wav in Resources */ = {isa = PBXBuildFile; fileRef = EE0744E5227C890F000989AF /* Rattle 007.wav */; };
+		EE0744E8227C8A00000989AF /* GameOverScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE0744E7227C8A00000989AF /* GameOverScene.swift */; };
+		EE0744EA227C8C25000989AF /* Water 009.wav in Resources */ = {isa = PBXBuildFile; fileRef = EE0744E9227C8C24000989AF /* Water 009.wav */; };
+		EE0744EC227C8CA1000989AF /* Misc 003.wav in Resources */ = {isa = PBXBuildFile; fileRef = EE0744EB227C8CA1000989AF /* Misc 003.wav */; };
 		EE1D530C226632EB006883AD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE1D530B226632EB006883AD /* AppDelegate.swift */; };
 		EE1D530E226632EB006883AD /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = EE1D530D226632EB006883AD /* GameScene.sks */; };
 		EE1D5310226632EB006883AD /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = EE1D530F226632EB006883AD /* Actions.sks */; };
@@ -31,6 +34,9 @@
 		EE0744E0227C8693000989AF /* Launch 001.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Launch 001.wav"; sourceTree = "<group>"; };
 		EE0744E1227C8693000989AF /* Laser 006.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Laser 006.wav"; sourceTree = "<group>"; };
 		EE0744E5227C890F000989AF /* Rattle 007.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Rattle 007.wav"; sourceTree = "<group>"; };
+		EE0744E7227C8A00000989AF /* GameOverScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverScene.swift; sourceTree = "<group>"; };
+		EE0744E9227C8C24000989AF /* Water 009.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Water 009.wav"; sourceTree = "<group>"; };
+		EE0744EB227C8CA1000989AF /* Misc 003.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Misc 003.wav"; sourceTree = "<group>"; };
 		EE1D5308226632EB006883AD /* MazeWalker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MazeWalker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE1D530B226632EB006883AD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EE1D530D226632EB006883AD /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -57,6 +63,8 @@
 		EE0744D8227C7BD5000989AF /* Sounds */ = {
 			isa = PBXGroup;
 			children = (
+				EE0744EB227C8CA1000989AF /* Misc 003.wav */,
+				EE0744E9227C8C24000989AF /* Water 009.wav */,
 				EE0744E5227C890F000989AF /* Rattle 007.wav */,
 				EE0744E1227C8693000989AF /* Laser 006.wav */,
 				EE0744E0227C8693000989AF /* Launch 001.wav */,
@@ -91,6 +99,7 @@
 				EE1D530D226632EB006883AD /* GameScene.sks */,
 				EE1D530F226632EB006883AD /* Actions.sks */,
 				EE1D5311226632EB006883AD /* GameScene.swift */,
+				EE0744E7227C8A00000989AF /* GameOverScene.swift */,
 				EE0744D6227C6D8D000989AF /* Enemy.swift */,
 				EE1D5313226632EB006883AD /* ViewController.swift */,
 				EE1D5315226632EC006883AD /* Assets.xcassets */,
@@ -162,6 +171,7 @@
 				EE1D530E226632EB006883AD /* GameScene.sks in Resources */,
 				EE1D5316226632EC006883AD /* Assets.xcassets in Resources */,
 				EE0744E4227C8693000989AF /* Laser 006.wav in Resources */,
+				EE0744EA227C8C25000989AF /* Water 009.wav in Resources */,
 				EE0744DC227C7E00000989AF /* ByTheWall.mp3 in Resources */,
 				EE0744DE227C7E84000989AF /* Water 003.wav in Resources */,
 				EE1D5310226632EB006883AD /* Actions.sks in Resources */,
@@ -169,6 +179,7 @@
 				EE0744E3227C8693000989AF /* Launch 001.wav in Resources */,
 				EE0744E2227C8693000989AF /* Shot 003.wav in Resources */,
 				EE0744E6227C890F000989AF /* Rattle 007.wav in Resources */,
+				EE0744EC227C8CA1000989AF /* Misc 003.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -179,6 +190,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EE0744E8227C8A00000989AF /* GameOverScene.swift in Sources */,
 				EE0744D7227C6D8D000989AF /* Enemy.swift in Sources */,
 				EE1D5314226632EB006883AD /* ViewController.swift in Sources */,
 				EE1D5312226632EB006883AD /* GameScene.swift in Sources */,

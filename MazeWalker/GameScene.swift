@@ -206,56 +206,60 @@ D11111111111111111111111111111111111111D
     }
     
     
-    func touchDown(atPoint pos : CGPoint) {
-        print("touchDown: \(pos)")
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.green
-            self.addChild(n)
-        }
-    }
+//    func touchDown(atPoint pos : CGPoint) {
+//        print("touchDown: \(pos)")
+//        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
+//            n.position = pos
+//            n.strokeColor = SKColor.green
+//            self.addChild(n)
+//        }
+//    }
+//
+//    func touchMoved(toPoint pos : CGPoint) {
+//        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
+//            n.position = pos
+//            n.strokeColor = SKColor.blue
+//            self.addChild(n)
+//        }
+//    }
+//
+//    func touchUp(atPoint pos : CGPoint) {
+//        let rocket = SKSpriteNode(imageNamed: "rocket")
+//        rocket.position = pos
+//        self.addChild(rocket)
+//        self.rockets.append(rocket)
+//        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
+//            n.position = pos
+//            n.strokeColor = SKColor.red
+//            self.addChild(n)
+//        }
+//    }
     
-    func touchMoved(toPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.blue
-            self.addChild(n)
-        }
-    }
+//    override func mouseDown(with event: NSEvent) {
+//        self.touchDown(atPoint: event.location(in: self))
+//    }
+//
+//    override func mouseDragged(with event: NSEvent) {
+//        self.touchMoved(toPoint: event.location(in: self))
+//    }
+//
+//    override func mouseUp(with event: NSEvent) {
+//        self.touchUp(atPoint: event.location(in: self))
+//    }
     
-    func touchUp(atPoint pos : CGPoint) {
-        let rocket = SKSpriteNode(imageNamed: "rocket")
-        rocket.position = pos
-        self.addChild(rocket)
-        self.rockets.append(rocket)
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.red
-            self.addChild(n)
-        }
-    }
-    
-    override func mouseDown(with event: NSEvent) {
-        self.touchDown(atPoint: event.location(in: self))
-    }
-    
-    override func mouseDragged(with event: NSEvent) {
-        self.touchMoved(toPoint: event.location(in: self))
-    }
-    
-    override func mouseUp(with event: NSEvent) {
-        self.touchUp(atPoint: event.location(in: self))
+    func generateEnemy() {
+        let enemy = Enemy()
+        let x = Int.random(in: 1..<39)
+        let y = Int.random(in: 1..<17)
+        enemy.position = CGPoint(x: 24 + x * 48, y: 30 + y * 60)
+        enemies.insert(enemy)
+        self.addChild(enemy.sprite)
     }
     
     override func keyDown(with event: NSEvent) {
         switch event.keyCode {
         case 0x31:
-            let enemy = Enemy()
-            let x = Int.random(in: 1..<39)
-            let y = Int.random(in: 1..<17)
-            enemy.position = CGPoint(x: 24 + x * 48, y: 30 + y * 60)
-            enemies.insert(enemy)
-            self.addChild(enemy.sprite)
+            break
             
 //            if let label = self.label {
 //                label.run(SKAction.init(named: "Pulse")!, withKey: "fadeInOut")
@@ -288,6 +292,7 @@ D11111111111111111111111111111111111111D
     var lastTime = 0.0
     
     func fire(_ dir: Direction) {
+        guard bullets.count < 5 else { return }
         let bullet = Bullet()
         bullet.direction = dir
         bullet.position = playerSprite.position
@@ -307,7 +312,19 @@ D11111111111111111111111111111111111111D
             }
         }
         if let label = self.label {
-            label.text = "Score: \(playerScore)   Tags: \(Int(playerTags))"
+            label.text = "Score: \(playerScore) / 300   Tags: \(Int(playerTags))"
+        }
+        
+        if playerTags <= 0 {
+            let reveal = SKTransition.flipHorizontal(withDuration: 0.5)
+            let gameOverScene = GameOverScene(size: self.size, won: false)
+            view?.presentScene(gameOverScene, transition: reveal)
+        }
+        
+        if playerScore >= 300 {
+            let reveal = SKTransition.flipHorizontal(withDuration: 0.5)
+            let gameOverScene = GameOverScene(size: self.size, won: true)
+            view?.presentScene(gameOverScene, transition: reveal)
         }
 
         if currentTime - lastTime > 0.001 {
@@ -416,7 +433,7 @@ D11111111111111111111111111111111111111D
                         enem.sprite.removeFromParent()
                         enemies.remove(enem)
                         run(SKAction.playSoundFileNamed("Shot 003.wav", waitForCompletion: false))
-                        playerScore += 5
+                        playerScore += 20
                     }
                 }
                 
@@ -431,6 +448,10 @@ D11111111111111111111111111111111111111D
             for e in deadBullets {
                 e.sprite.removeFromParent()
                 bullets.remove(e)
+            }
+            
+            if Int.random(in: 0..<30) == 0 && enemies.count < 20 {
+                generateEnemy()
             }
 
             lastTime = currentTime
