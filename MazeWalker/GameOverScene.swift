@@ -20,7 +20,7 @@ class GameOverScene: SKScene {
         let message = won ? "You Won!" : "You Lose :["
         
         run(SKAction.sequence([
-            SKAction.wait(forDuration: 1.0),
+            SKAction.wait(forDuration: 0.5),
             SKAction.run() { [weak self] in
                 // 5
                 guard let `self` = self else { return }

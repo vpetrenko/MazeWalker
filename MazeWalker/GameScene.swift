@@ -55,20 +55,20 @@ class GameScene: SKScene {
 D11111111111111111111111111111111111111D
 1                                      1
 1    1                                 1
-1 1 1C                                 1
-1  1C                                  1
-1                                      1
-1                                      1
-1                                      1
-1                                      1
+1 1C1                                  1
+1  1                                   1
+1           1111111111111              1
+1                111                   1
+1          11111     11111             1
+1                 1                    1
 1                                      1
 1                 1                    1
 1                1D1                   1
 1                 1                    1
-1                                      1
-1                                      1
-1                                      1
-1                                      1
+1                                11111 1
+1                                1     1
+1                                1 11111
+1                                1    C1
 D11111111111111111111111111111111111111D
 """
    
@@ -109,12 +109,12 @@ D11111111111111111111111111111111111111D
         level = Array(repeating: Array(repeating: .space, count: height), count: width)
         items = Array(repeating: Array(repeating: .none, count: height), count: width)
         var x = 0
-        var y = 0
+        var y = height - 1
         for ch in levelMap {
             switch (ch) {
             case "\n":
                 x = -1
-                y += 1
+                y -= 1
             case "1":
                 level[x][y] = .wall
             case "D":
@@ -310,6 +310,12 @@ D11111111111111111111111111111111111111D
             if (Int(30 + playerSprite.position.y) % tileHeight) == 0 && (newPlayerDirection == .left || newPlayerDirection == .right) {
                 playerDirection = newPlayerDirection
             }
+            switch(playerDirection) {
+            case .left:
+                playerSprite.xScale = -1;
+            default:
+                playerSprite.xScale = 1;
+            }
         }
         if let label = self.label {
             label.text = "Score: \(playerScore) / 300   Tags: \(Int(playerTags))"
@@ -382,9 +388,7 @@ D11111111111111111111111111111111111111D
                 case 2:
                     newDir = .right
                 case 3:
-                    newDir = .right
-                case 4:
-                    newDir = .right
+                    newDir = .left
                 default:
                     break
                 }
