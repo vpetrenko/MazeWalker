@@ -23,12 +23,16 @@ enum KeyCodes : UInt16 {
 enum LevelItem {
     case wall
     case space
-    case door
 }
 
 enum ActiveItem {
     case none
     case crown(sprite: SKSpriteNode?)
+    case ringR(sprite: SKSpriteNode?)
+    case ringG(sprite: SKSpriteNode?)
+    case ringB(sprite: SKSpriteNode?)
+    case key(sprite: SKSpriteNode?)
+    case door(sprite: SKSpriteNode?)
 }
 
 enum Direction {
@@ -72,24 +76,24 @@ class GameScene: SKScene {
 //D11111111111111111111111111111111111111D
 //"""
     private var levelMap = """
-D11111111111111111111111111111111111111D
-1        1          1                  1
-1 1 1 1  1  1111111 1     111    1     1
-1 1 1111 1  1     1 1 11    1 1111  1  1
-1 1    1 11 11    1    1    1       1  1
-1 1  1       11   1 1111  1 1   11111  1
-1 1  1 11111  11111 1     1            1
-1    1   1C1   111    11  1 11111      1
-1 111111   1          1   1        1   1
-1     1   111R11 1  1 1 11111   1  1   D
-11111 1 1   111C 1  1 1    11   1  1   1
-1       111 1 1111  1      J1   1      1
-1 1111111   1 11    111111 11          1
-1  1   1  1 1     1        11 11111    1
-1  1C1        11111 111                1
-1 1111 1111 1111111   111  1111   1    1
-1      1            1                  1
-D11111111111111111111111111111111111111D
+11111111111111111111111111111111111111111
+1        1          1                  11
+1 1 1K1  1  1111111 1     111    1     11
+1 1 1111 1  1     1 1 11    1 1111  1  11
+1 1    1 11 11    1 GBR1    1       1  11
+1 1  1       11   1 1111  1 1   11111  11
+1 1  1 11111  11111 1     1            11
+1    1   1C1   111    11  1 11111      11
+1 111111   1          1   1        1   11
+1     1   111B11 1  1 1 11111   1  1   D1
+11111 1 1   111C 1  1 1    11   1  1   11
+1       111 1G1111  1      J1   1      11
+1 1111111   1 11    111111 11          11
+1  1   1  1 1     1        11 11111    11
+1  1C1        11111 111                11
+1 1111 1111 1111111   111  1111   1    11
+1      1            1                  11
+11111111111111111111111111111111111111111
 """
 
     private var level : [[LevelItem]]
@@ -100,8 +104,10 @@ D11111111111111111111111111111111111111D
     private var px = 0
     private var py = 0
     private var playerSprite = SKSpriteNode()
-    private var playerScore = 0
-    private var playerTags = 50.0
+    var playerScore = 0
+    var playerTags = 50.0
+    private var playerHasKey = false
+    private var walkFrames = [SKTexture]()
 
     private var bullets = Set<Bullet>()
 
@@ -138,9 +144,17 @@ D11111111111111111111111111111111111111D
             case "1":
                 level[x][y] = .wall
             case "D":
-                level[x][y] = .door
+                items[x][y] = .door(sprite: nil)
             case "C":
                 items[x][y] = .crown(sprite: nil)
+            case "R":
+                items[x][y] = .ringR(sprite: nil)
+            case "G":
+                items[x][y] = .ringG(sprite: nil)
+            case "B":
+                items[x][y] = .ringB(sprite: nil)
+            case "K":
+                items[x][y] = .key(sprite: nil)
             case " ":
                 level[x][y] = .space
             default:
@@ -189,10 +203,8 @@ D11111111111111111111111111111111111111D
                 switch (t) {
                 case .wall:
                     title = SKSpriteNode(imageNamed: "wall1")
-                case .door:
-                    title = SKSpriteNode(imageNamed: "door")
                 case .space:
-                    title = SKSpriteNode(imageNamed: "dirt")
+                    title = SKSpriteNode(imageNamed: "space")
                 }
                 title.size = CGSize(width: 48, height: 60)
                 title.position = CGPoint(x: 24 + x * 48, y: 30 + y * 60)
@@ -203,12 +215,26 @@ D11111111111111111111111111111111111111D
         for (x, col) in items.enumerated() {
             for (y, t) in col.enumerated() {
                 var item = SKSpriteNode()
-                var gotItem = false
+                var gotItem = true
                 switch (t) {
                 case .crown:
                     item = SKSpriteNode(imageNamed: "crown")
                     items[x][y] = .crown(sprite: item)
-                    gotItem = true
+                case .ringR:
+                    item = SKSpriteNode(imageNamed: "ringR")
+                    items[x][y] = .ringR(sprite: item)
+                case .ringG:
+                    item = SKSpriteNode(imageNamed: "ringG")
+                    items[x][y] = .ringG(sprite: item)
+                case .ringB:
+                    item = SKSpriteNode(imageNamed: "ringB")
+                    items[x][y] = .ringB(sprite: item)
+                case .key:
+                    item = SKSpriteNode(imageNamed: "key")
+                    items[x][y] = .key(sprite: item)
+                case .door:
+                    item = SKSpriteNode(imageNamed: "door")
+                    items[x][y] = .door(sprite: item)
                 default:
                     gotItem = false
                 }
@@ -220,11 +246,27 @@ D11111111111111111111111111111111111111D
                 }
             }
         }
+        
+        setPlayerKey(playerHasKey)
         let backgroundMusic = SKAudioNode(fileNamed: "ByTheWall.mp3")
         backgroundMusic.autoplayLooped = true
         addChild(backgroundMusic)
     }
     
+    func setPlayerKey(_ key: Bool) {
+        walkFrames.removeAll()
+        if (key) {
+            let wf1 = SKTexture(imageNamed: "man1key")
+            walkFrames.append(wf1)
+            let wf2 = SKTexture(imageNamed: "man2key")
+            walkFrames.append(wf2)
+        } else {
+            let wf1 = SKTexture(imageNamed: "man1")
+            walkFrames.append(wf1)
+            let wf2 = SKTexture(imageNamed: "man2")
+            walkFrames.append(wf2)
+        }
+    }
     
     func generateEnemy() {
         let enemy = Enemy()
@@ -238,6 +280,8 @@ D11111111111111111111111111111111111111D
     override func keyDown(with event: NSEvent) {
         switch event.keyCode {
         case 0x31:
+//            playerHasKey = !playerHasKey
+//            setPlayerKey(playerHasKey)
             break
             
         case KeyCodes.up.rawValue:
@@ -264,7 +308,7 @@ D11111111111111111111111111111111111111D
     var lastTime = 0.0
     
     func fire(_ dir: Direction) {
-        guard bullets.count < 5 else { return }
+        guard bullets.count < 3 else { return }
         let bullet = Bullet()
         bullet.direction = dir
         bullet.position = playerSprite.position
@@ -290,21 +334,15 @@ D11111111111111111111111111111111111111D
             }
         }
         if let label = self.label {
-            label.text = "Score: \(playerScore) / 300   Tags: \(Int(playerTags))"
+            label.text = "Score: \(playerScore)    Tags: \(Int(playerTags))"
         }
         
-        if playerTags <= 0 {
+        if playerTags < 1 {
             let reveal = SKTransition.flipHorizontal(withDuration: 0.5)
-            let gameOverScene = GameOverScene(size: self.size, won: false)
+            let gameOverScene = GameOverScene(size: self.size, won: false, score: playerScore, tags: playerTags)
             view?.presentScene(gameOverScene, transition: reveal)
         }
         
-        if playerScore >= 300 {
-            let reveal = SKTransition.flipHorizontal(withDuration: 0.5)
-            let gameOverScene = GameOverScene(size: self.size, won: true)
-            view?.presentScene(gameOverScene, transition: reveal)
-        }
-
         if currentTime - lastTime > 0.001 {
             let newX = playerSprite.position.x + CGFloat(directs[playerDirection]!.0)
             let newY = playerSprite.position.y + CGFloat(directs[playerDirection]!.1)
@@ -315,28 +353,69 @@ D11111111111111111111111111111111111111D
             let intX = playerDirection == .right ? Int(ceil(tileX)) : Int(tileX)
             let intY = playerDirection == .up ? Int(ceil(tileY)) : Int(tileY)
             
-            if level[intX][intY] == .space {
-                playerSprite.position.x = newX
-                playerSprite.position.y = newY
-            }
+            var playerCanGo : Bool = level[intX][intY] == .space
+            
             switch (items[intX][intY]) {
             case .crown(let sprite):
                 playerScore += 100
                 sprite?.removeFromParent()
                 items[intX][intY] = .none
                 run(SKAction.playSoundFileNamed("Water 003.wav", waitForCompletion: false))
+            case .ringR(let sprite):
+                playerScore += 20
+                sprite?.removeFromParent()
+                items[intX][intY] = .none
+                run(SKAction.playSoundFileNamed("Water 003.wav", waitForCompletion: false))
+            case .ringG(let sprite):
+                playerScore += 20
+                sprite?.removeFromParent()
+                items[intX][intY] = .none
+                run(SKAction.playSoundFileNamed("Water 003.wav", waitForCompletion: false))
+            case .ringB(let sprite):
+                playerScore += 20
+                sprite?.removeFromParent()
+                items[intX][intY] = .none
+                run(SKAction.playSoundFileNamed("Water 003.wav", waitForCompletion: false))
+            case .key(let sprite):
+                sprite?.removeFromParent()
+                items[intX][intY] = .none
+                playerHasKey = true
+                setPlayerKey(playerHasKey)
+                run(SKAction.playSoundFileNamed("Laser 012.wav", waitForCompletion: false))
+            case .door(let sprite):
+                if playerHasKey {
+                    sprite?.removeFromParent()
+                    items[intX][intY] = .none
+                    playerHasKey = false
+                    setPlayerKey(playerHasKey)
+                    run(SKAction.playSoundFileNamed("Laser 012.wav", waitForCompletion: false))
+                } else {
+                    playerCanGo = false
+                }
             default:
                 break
             }
+            if playerCanGo {
+                playerSprite.position.x = newX
+                playerSprite.position.y = newY
+                if intX >= 39 {
+                    let reveal = SKTransition.flipHorizontal(withDuration: 0.5)
+                    let gameOverScene = GameOverScene(size: self.size, won: true, score: playerScore, tags: playerTags)
+                    view?.presentScene(gameOverScene, transition: reveal)
+                }
+            }
+            playerSprite.texture = self.walkFrames[Int(newX * 0.05) % 2]
+
+
             
             for e in enemies {
                 let newX = e.position.x + CGFloat(directs[e.direction]!.0)
                 let newY = e.position.y + CGFloat(directs[e.direction]!.1)
 
-                let playerRect = CGRect(x: playerSprite.position.x - 24, y: playerSprite.position.y - 24, width: 48, height: 60)
+                let playerRect = CGRect(x: playerSprite.position.x - 24, y: playerSprite.position.y - 30, width: 48, height: 60)
                 let enemRect = CGRect(x: newX - 24, y: newY - 30, width: 48, height: 60)
                 if enemRect.intersects(playerRect) {
-                    playerTags -= 0.1
+                    playerTags -= 0.3
                     run(SKAction.playSoundFileNamed("Rattle 007.wav", waitForCompletion: false))
                 }
                 
@@ -409,7 +488,7 @@ D11111111111111111111111111111111111111D
                         enem.sprite.removeFromParent()
                         enemies.remove(enem)
                         run(SKAction.playSoundFileNamed("Shot 003.wav", waitForCompletion: false))
-                        playerScore += 20
+                        playerScore += 5
                     }
                 }
                 
@@ -426,7 +505,7 @@ D11111111111111111111111111111111111111D
                 bullets.remove(e)
             }
             
-            if Int.random(in: 0..<30) == 0 && enemies.count < 20 {
+            if Int.random(in: 0..<30) == 0 && enemies.count < 25 {
                 generateEnemy()
             }
 

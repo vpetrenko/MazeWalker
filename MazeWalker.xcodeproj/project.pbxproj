@@ -24,6 +24,7 @@
 		EE1D5314226632EB006883AD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE1D5313226632EB006883AD /* ViewController.swift */; };
 		EE1D5316226632EC006883AD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EE1D5315226632EC006883AD /* Assets.xcassets */; };
 		EE1D5319226632EC006883AD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EE1D5317226632EC006883AD /* Main.storyboard */; };
+		EE6D192B227DA2CF006CC96A /* Laser 012.wav in Resources */ = {isa = PBXBuildFile; fileRef = EE6D192A227DA2CF006CC96A /* Laser 012.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,6 +48,7 @@
 		EE1D5318226632EC006883AD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		EE1D531A226632EC006883AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EE1D531B226632EC006883AD /* MazeWalker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MazeWalker.entitlements; sourceTree = "<group>"; };
+		EE6D192A227DA2CF006CC96A /* Laser 012.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Laser 012.wav"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 		EE0744D8227C7BD5000989AF /* Sounds */ = {
 			isa = PBXGroup;
 			children = (
+				EE6D192A227DA2CF006CC96A /* Laser 012.wav */,
 				EE0744EB227C8CA1000989AF /* Misc 003.wav */,
 				EE0744E9227C8C24000989AF /* Water 009.wav */,
 				EE0744E5227C890F000989AF /* Rattle 007.wav */,
@@ -174,6 +177,7 @@
 				EE0744EA227C8C25000989AF /* Water 009.wav in Resources */,
 				EE0744DC227C7E00000989AF /* ByTheWall.mp3 in Resources */,
 				EE0744DE227C7E84000989AF /* Water 003.wav in Resources */,
+				EE6D192B227DA2CF006CC96A /* Laser 012.wav in Resources */,
 				EE1D5310226632EB006883AD /* Actions.sks in Resources */,
 				EE1D5319226632EC006883AD /* Main.storyboard in Resources */,
 				EE0744E3227C8693000989AF /* Launch 001.wav in Resources */,

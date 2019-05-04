@@ -10,49 +10,39 @@ import Foundation
 import SpriteKit
 
 class GameOverScene: SKScene {
-    init(size: CGSize, won:Bool) {
+    var playerScore = 0
+    var playerTags = 0.0
+    var playerWon = false
+    
+    init(size: CGSize, won:Bool, score:Int, tags:Double) {
         super.init(size: size)
         
-        // 1
+        playerScore = score
+        playerTags = tags
+        playerWon = won
         backgroundColor = SKColor.black
         
-        // 2
-        let message = won ? "You Won!" : "You Lose :["
+        let message = (won ? "You Won!" : "You Lose :[")
+            + "  Score: \(score). Press any key to continue."
         
         run(SKAction.sequence([
             SKAction.wait(forDuration: 0.5),
             SKAction.run() { [weak self] in
-                // 5
-                guard let `self` = self else { return }
+                guard let self = self else { return }
                 self.run(SKAction.playSoundFileNamed(won ? "Misc 003.wav" : "Water 009.wav", waitForCompletion: false))
             }
             ]))
 
         
-        // 3
         let label = SKLabelNode(fontNamed: "Chalkduster")
         label.text = message
-        label.fontSize = 72
+        label.fontSize = 60
         label.fontColor = SKColor.white
         label.position = CGPoint(x: size.width/2, y: size.height/2)
         addChild(label)
         
-        // 4
-//        run(SKAction.sequence([
-//            SKAction.wait(forDuration: 3.0),
-//            SKAction.run() { [weak self] in
-//                // 5
-//                guard let `self` = self else { return }
-//                let reveal = SKTransition.flipHorizontal(withDuration: 0.5)
-//                if let scene = SKScene(fileNamed: "GameScene") {
-//                    scene.scaleMode = .aspectFit
-//                    self.view?.presentScene(scene, transition:reveal)
-//                }
-//            }
-//            ]))
     }
     
-    // 6
     required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -61,6 +51,15 @@ class GameOverScene: SKScene {
         let reveal = SKTransition.flipHorizontal(withDuration: 0.5)
         if let scene = SKScene(fileNamed: "GameScene") {
             scene.scaleMode = .aspectFit
+            if let scene = scene as? GameScene {
+                if playerWon {
+                    scene.playerScore = playerScore
+                    scene.playerTags = playerTags
+                } else {
+                    scene.playerScore = 0
+                    scene.playerTags = 50
+                }
+            }
             self.view?.presentScene(scene, transition:reveal)
         }
     }
