@@ -25,7 +25,20 @@ class Actor: Hashable {
         }
     }
     
-    var direction: Direction = .down
+    var direction: Direction = .down {
+        didSet {
+            switch(direction) {
+            case .right:
+                sprite.zRotation = 1.57
+            case .up:
+                sprite.zRotation = 3.14
+            case .left:
+                sprite.zRotation = 4.712
+            default:
+                sprite.zRotation = 0
+            }
+        }
+    }
     
     init() {
         sprite.size = CGSize(width: 48, height: 60)
@@ -52,21 +65,6 @@ class Enemy: Actor {
 
 class Bullet: Actor {
     
-    override var direction: Direction {
-        didSet {
-            switch(direction) {
-            case .right:
-                sprite.zRotation = 1.57
-            case .up:
-                sprite.zRotation = 3.14
-            case .left:
-                sprite.zRotation = 4.712
-            default:
-                sprite.zRotation = 0
-            }
-        }
-    }
-
     override init() {
         super.init()
         sprite = SKSpriteNode(imageNamed: "bullet")

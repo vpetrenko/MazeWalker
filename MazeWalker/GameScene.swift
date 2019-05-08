@@ -450,18 +450,6 @@ class GameScene: SKScene {
                 if (Int(30 + e.position.y) % tileHeight) == 0 && (newDir == .left || newDir == .right) {
                     e.direction = newDir
                 }
-                
-                switch(e.direction) {
-                case .right:
-                    e.sprite.zRotation = 1.57
-                case .up:
-                    e.sprite.zRotation = 3.14
-                case .left:
-                    e.sprite.zRotation = 4.712
-                default:
-                    e.sprite.zRotation = 0
-                }
-
             }
 
             var deadBullets = [Bullet]()
