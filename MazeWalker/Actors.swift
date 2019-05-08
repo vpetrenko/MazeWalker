@@ -40,11 +40,6 @@ class Actor: Hashable {
         }
     }
     
-    init() {
-        sprite.size = CGSize(width: 48, height: 60)
-        sprite.zPosition = 75
-    }
-
     func hash(into hasher: inout Hasher) {
         hasher.combine(sprite)
     }
@@ -54,6 +49,8 @@ class Enemy: Actor {
     override init() {
         super.init()
         sprite = SKSpriteNode(imageNamed: "turtle1")
+        sprite.size = CGSize(width: 48, height: 60)
+        sprite.zPosition = 75
     }
 
     init(pos: CGPoint) {
@@ -68,6 +65,7 @@ class Bullet: Actor {
     override init() {
         super.init()
         sprite = SKSpriteNode(imageNamed: "bullet")
+        sprite.size = CGSize(width: 48, height: 60)
         sprite.zPosition = 100
     }
 }
