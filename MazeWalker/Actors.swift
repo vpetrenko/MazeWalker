@@ -9,15 +9,10 @@
 import Foundation
 import SpriteKit
 
-class Enemy: Hashable {
-    static func == (lhs: Enemy, rhs: Enemy) -> Bool {
+class Actor: Hashable {
+    static func == (lhs: Actor, rhs: Actor) -> Bool {
         return lhs.sprite == rhs.sprite
     }
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(sprite)
-    }
-        
     
     var sprite = SKSpriteNode()
     
@@ -29,43 +24,35 @@ class Enemy: Hashable {
             sprite.position = newValue
         }
     }
-
+    
     var direction: Direction = .down
     
-    required init() {
-        sprite = SKSpriteNode(imageNamed: "turtle1")
+    init() {
         sprite.size = CGSize(width: 48, height: 60)
         sprite.zPosition = 75
     }
 
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(sprite)
+    }
+}
+
+class Enemy: Actor {
+    override init() {
+        super.init()
+        sprite = SKSpriteNode(imageNamed: "turtle1")
+    }
+
     init(pos: CGPoint) {
+        super.init()
         sprite.position = pos
     }
 }
 
 
-class Bullet: Hashable {
+class Bullet: Actor {
     
-    static func == (lhs: Bullet, rhs: Bullet) -> Bool {
-        return lhs.sprite == rhs.sprite
-    }
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(sprite)
-    }
-
-    var sprite = SKSpriteNode()
-    
-    var position: CGPoint {
-        get {
-            return sprite.position
-        }
-        set {
-            sprite.position = newValue
-        }
-    }
-    
-    var direction: Direction = .down {
+    override var direction: Direction {
         didSet {
             switch(direction) {
             case .right:
@@ -80,9 +67,9 @@ class Bullet: Hashable {
         }
     }
 
-    required init() {
+    override init() {
+        super.init()
         sprite = SKSpriteNode(imageNamed: "bullet")
-        sprite.size = CGSize(width: 48, height: 60)
         sprite.zPosition = 100
     }
 }
