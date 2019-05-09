@@ -25,6 +25,18 @@ class GameOverScene: SKScene {
         let message = (won ? "You Won!" : "You Lose :[")
             + "  Score: \(score). Press any key to continue."
         
+        if won {
+            run(SKAction.repeatForever(SKAction.sequence([SKAction.wait(forDuration: 0.5), SKAction.run() { [weak self] in
+                guard let self = self else { return }
+                    if let emitter = SKEmitterNode(fileNamed: "SparkParticles") {
+                        let sx = Int.random(in: 100..<Int(size.width) - 100)
+                        let sy = Int.random(in: 100..<Int(size.height) - 100)
+                        emitter.position = CGPoint(x: sx, y: sy)
+                        self.addChild(emitter)
+                    }
+                }])))
+        }
+        
         run(SKAction.sequence([
             SKAction.wait(forDuration: 0.5),
             SKAction.run() { [weak self] in
