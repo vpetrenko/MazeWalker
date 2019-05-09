@@ -9,17 +9,6 @@
 import SpriteKit
 import GameplayKit
 
-enum KeyCodes : UInt16 {
-    case up = 126
-    case down = 125
-    case left = 123
-    case right = 124
-    case fireLeft = 0
-    case fireRight = 2
-    case fireUp = 13
-    case fireDown = 1
-}
-
 enum LevelItem {
     case wall
     case space
@@ -35,18 +24,14 @@ enum ActiveItem {
     case door(sprite: SKSpriteNode?)
 }
 
-enum Direction {
-    case left
-    case right
-    case up
-    case down
+enum GraphConsts {
+    static let tileWidth = 48
+    static let tileHeight = 60
+    static let halfTileWidth: CGFloat = CGFloat(tileWidth) / 2.0
+    static let halfTileHeight: CGFloat = CGFloat(tileHeight) / 2.0
 }
 
 class GameScene: SKScene {
-    
-    let tileWidth = 48
-    let tileHeight = 60
-    
     private var label : SKLabelNode?
     private var spinnyNode : SKShapeNode?
     private var rockets = [SKSpriteNode]()
@@ -192,8 +177,8 @@ class GameScene: SKScene {
         
         
         playerSprite = SKSpriteNode(imageNamed: "man1")
-        playerSprite.size = CGSize(width: 48, height: 60)
-        playerSprite.position = CGPoint(x: 24 + 48, y: 30 + 60)
+        playerSprite.size = CGSize(width: GraphConsts.tileWidth, height: GraphConsts.tileHeight)
+        playerSprite.position = CGPoint(x: GraphConsts.halfTileWidth + CGFloat(GraphConsts.tileWidth), y: GraphConsts.halfTileHeight + CGFloat(GraphConsts.tileHeight))
         playerSprite.zPosition = 100
         self.addChild(playerSprite)
 
@@ -206,8 +191,8 @@ class GameScene: SKScene {
                 case .space:
                     title = SKSpriteNode(imageNamed: "space")
                 }
-                title.size = CGSize(width: 48, height: 60)
-                title.position = CGPoint(x: 24 + x * 48, y: 30 + y * 60)
+                title.size = CGSize(width: GraphConsts.tileWidth, height: GraphConsts.tileHeight)
+                title.position = CGPoint(x: GraphConsts.halfTileWidth + CGFloat(x * GraphConsts.tileWidth), y: GraphConsts.halfTileHeight + CGFloat(y * GraphConsts.tileHeight))
                 self.addChild(title)
                 self.walls.append(title)
             }
@@ -239,8 +224,8 @@ class GameScene: SKScene {
                     gotItem = false
                 }
                 if gotItem {
-                    item.size = CGSize(width: tileWidth, height: tileHeight)
-                    item.position = CGPoint(x: 24 + x * 48, y: 30 + y * 60)
+                    item.size = CGSize(width: GraphConsts.tileWidth, height: GraphConsts.tileHeight)
+                    item.position = CGPoint(x: GraphConsts.halfTileWidth + CGFloat(x * GraphConsts.tileWidth), y: GraphConsts.halfTileHeight + CGFloat(y * GraphConsts.tileHeight))
                     item.zPosition = 50
                     self.addChild(item)
                 }
@@ -272,33 +257,33 @@ class GameScene: SKScene {
         let enemy = Enemy()
         let x = Int.random(in: 1..<39)
         let y = Int.random(in: 1..<17)
-        enemy.position = CGPoint(x: 24 + x * 48, y: 30 + y * 60)
+        enemy.position = CGPoint(x: GraphConsts.halfTileWidth + CGFloat(x * GraphConsts.tileWidth), y: GraphConsts.halfTileHeight + CGFloat(y * GraphConsts.tileHeight))
         enemies.insert(enemy)
         self.addChild(enemy.sprite)
     }
     
     override func keyDown(with event: NSEvent) {
-        switch event.keyCode {
+        switch Int(event.keyCode) {
         case 0x31:
 //            playerHasKey = !playerHasKey
 //            setPlayerKey(playerHasKey)
             break
             
-        case KeyCodes.up.rawValue:
+        case KeyCodes.up:
             newPlayerDirection = .up
-        case KeyCodes.down.rawValue:
+        case KeyCodes.down:
             newPlayerDirection = .down
-        case KeyCodes.left.rawValue:
+        case KeyCodes.left:
             newPlayerDirection = .left
-        case KeyCodes.right.rawValue:
+        case KeyCodes.right:
             newPlayerDirection = .right
-        case KeyCodes.fireUp.rawValue:
+        case KeyCodes.fireUp:
             fire(.up)
-        case KeyCodes.fireDown.rawValue:
+        case KeyCodes.fireDown:
             fire(.down)
-        case KeyCodes.fireLeft.rawValue:
+        case KeyCodes.fireLeft:
             fire(.left)
-        case KeyCodes.fireRight.rawValue:
+        case KeyCodes.fireRight:
             fire(.right)
         default:
             print("keyDown: \(event.characters!) keyCode: \(event.keyCode)")
@@ -320,10 +305,10 @@ class GameScene: SKScene {
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
         if newPlayerDirection != playerDirection {
-            if (Int(24 + playerSprite.position.x) % tileWidth) == 0 && (newPlayerDirection == .up || newPlayerDirection == .down) {
+            if (Int(GraphConsts.halfTileHeight + playerSprite.position.x) % GraphConsts.tileWidth) == 0 && (newPlayerDirection == .up || newPlayerDirection == .down) {
                 playerDirection = newPlayerDirection
             }
-            if (Int(30 + playerSprite.position.y) % tileHeight) == 0 && (newPlayerDirection == .left || newPlayerDirection == .right) {
+            if (Int(GraphConsts.halfTileWidth + playerSprite.position.y) % GraphConsts.tileHeight) == 0 && (newPlayerDirection == .left || newPlayerDirection == .right) {
                 playerDirection = newPlayerDirection
             }
             switch(playerDirection) {
@@ -347,8 +332,8 @@ class GameScene: SKScene {
             let newX = playerSprite.position.x + CGFloat(directs[playerDirection]!.0)
             let newY = playerSprite.position.y + CGFloat(directs[playerDirection]!.1)
             
-            let tileX = (newX - 24) / CGFloat(tileWidth)
-            let tileY = (newY - 30) / CGFloat(tileHeight)
+            let tileX = (newX - GraphConsts.halfTileWidth) / CGFloat(GraphConsts.tileWidth)
+            let tileY = (newY - GraphConsts.halfTileHeight) / CGFloat(GraphConsts.tileHeight)
             
             let intX = playerDirection == .right ? Int(ceil(tileX)) : Int(tileX)
             let intY = playerDirection == .up ? Int(ceil(tileY)) : Int(tileY)
@@ -412,15 +397,15 @@ class GameScene: SKScene {
                 let newX = e.position.x + CGFloat(directs[e.direction]!.0)
                 let newY = e.position.y + CGFloat(directs[e.direction]!.1)
 
-                let playerRect = CGRect(x: playerSprite.position.x - 24, y: playerSprite.position.y - 30, width: 48, height: 60)
-                let enemRect = CGRect(x: newX - 24, y: newY - 30, width: 48, height: 60)
+                let playerRect = CGRect(x: playerSprite.position.x - GraphConsts.halfTileWidth, y: playerSprite.position.y - GraphConsts.halfTileHeight, width: CGFloat(GraphConsts.tileWidth), height: CGFloat(GraphConsts.tileHeight))
+                let enemRect = CGRect(x: newX - GraphConsts.halfTileWidth, y: newY - GraphConsts.halfTileHeight, width: CGFloat(GraphConsts.tileWidth), height: CGFloat(GraphConsts.tileHeight))
                 if enemRect.intersects(playerRect) {
                     playerTags -= 0.3
                     run(SKAction.playSoundFileNamed("Rattle 007.wav", waitForCompletion: false))
                 }
                 
-                let tileX = (newX - 24) / CGFloat(tileWidth)
-                let tileY = (newY - 30) / CGFloat(tileHeight)
+                let tileX = (newX - GraphConsts.halfTileWidth) / CGFloat(GraphConsts.tileWidth)
+                let tileY = (newY - GraphConsts.halfTileHeight) / CGFloat(GraphConsts.tileHeight)
                 
                 let intX = e.direction == .right ? Int(ceil(tileX)) : Int(tileX)
                 let intY = e.direction == .up ? Int(ceil(tileY)) : Int(tileY)
@@ -444,10 +429,10 @@ class GameScene: SKScene {
                     break
                 }
                 
-                if (Int(24 + e.position.x) % tileWidth) == 0 && (newDir == .up || newDir == .down) {
+                if (Int(GraphConsts.halfTileWidth + e.position.x) % GraphConsts.tileWidth) == 0 && (newDir == .up || newDir == .down) {
                     e.direction = newDir
                 }
-                if (Int(30 + e.position.y) % tileHeight) == 0 && (newDir == .left || newDir == .right) {
+                if (Int(GraphConsts.halfTileHeight + e.position.y) % GraphConsts.tileHeight) == 0 && (newDir == .left || newDir == .right) {
                     e.direction = newDir
                 }
             }
@@ -458,8 +443,8 @@ class GameScene: SKScene {
                 let newX = e.position.x + 2 * CGFloat(directs[e.direction]!.0)
                 let newY = e.position.y + 2 * CGFloat(directs[e.direction]!.1)
                 
-                let tileX = (newX - 24) / CGFloat(tileWidth)
-                let tileY = (newY - 30) / CGFloat(tileHeight)
+                let tileX = (newX - GraphConsts.halfTileWidth) / CGFloat(GraphConsts.tileWidth)
+                let tileY = (newY - GraphConsts.halfTileHeight) / CGFloat(GraphConsts.tileHeight)
                 
                 let intX = e.direction == .right ? Int(ceil(tileX)) : Int(tileX)
                 let intY = e.direction == .up ? Int(ceil(tileY)) : Int(tileY)
@@ -467,9 +452,9 @@ class GameScene: SKScene {
                 var deadEnemies = [Enemy]()
                 for enem in enemies {
                     var enemPos = enem.position
-                    enemPos.x -= 24
-                    enemPos.y -= 30
-                    let enemRect = CGRect(origin: enemPos, size: CGSize(width: tileWidth, height: tileHeight))
+                    enemPos.x -= GraphConsts.halfTileWidth
+                    enemPos.y -= GraphConsts.halfTileHeight
+                    let enemRect = CGRect(origin: enemPos, size: CGSize(width: GraphConsts.tileWidth, height: GraphConsts.tileHeight))
                     if (enemRect.contains(e.position)) {
                         deadBullets.append(e)
                         deadEnemies.append(enem)

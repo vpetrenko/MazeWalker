@@ -24,6 +24,7 @@
 		EE1D5314226632EB006883AD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE1D5313226632EB006883AD /* ViewController.swift */; };
 		EE1D5316226632EC006883AD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EE1D5315226632EC006883AD /* Assets.xcassets */; };
 		EE1D5319226632EC006883AD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EE1D5317226632EC006883AD /* Main.storyboard */; };
+		EE65BEA6228432FE00D4B714 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE65BEA5228432FE00D4B714 /* Constants.swift */; };
 		EE6D192B227DA2CF006CC96A /* Laser 012.wav in Resources */ = {isa = PBXBuildFile; fileRef = EE6D192A227DA2CF006CC96A /* Laser 012.wav */; };
 		EECD74382281E70D00B641F4 /* SparkParticles.sks in Resources */ = {isa = PBXBuildFile; fileRef = EECD74372281E70D00B641F4 /* SparkParticles.sks */; };
 /* End PBXBuildFile section */
@@ -49,6 +50,7 @@
 		EE1D5318226632EC006883AD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		EE1D531A226632EC006883AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EE1D531B226632EC006883AD /* MazeWalker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MazeWalker.entitlements; sourceTree = "<group>"; };
+		EE65BEA5228432FE00D4B714 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		EE6D192A227DA2CF006CC96A /* Laser 012.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Laser 012.wav"; sourceTree = "<group>"; };
 		EECD74372281E70D00B641F4 /* SparkParticles.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = SparkParticles.sks; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -103,8 +105,9 @@
 				EE1D530B226632EB006883AD /* AppDelegate.swift */,
 				EE1D530D226632EB006883AD /* GameScene.sks */,
 				EE1D530F226632EB006883AD /* Actions.sks */,
-				EE1D5311226632EB006883AD /* GameScene.swift */,
 				EECD74372281E70D00B641F4 /* SparkParticles.sks */,
+				EE65BEA5228432FE00D4B714 /* Constants.swift */,
+				EE1D5311226632EB006883AD /* GameScene.swift */,
 				EE0744E7227C8A00000989AF /* GameOverScene.swift */,
 				EE0744D6227C6D8D000989AF /* Actors.swift */,
 				EE1D5313226632EB006883AD /* ViewController.swift */,
@@ -203,6 +206,7 @@
 				EE1D5314226632EB006883AD /* ViewController.swift in Sources */,
 				EE1D5312226632EB006883AD /* GameScene.swift in Sources */,
 				EE1D530C226632EB006883AD /* AppDelegate.swift in Sources */,
+				EE65BEA6228432FE00D4B714 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

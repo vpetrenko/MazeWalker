@@ -48,8 +48,8 @@ class Actor: Hashable {
 class Enemy: Actor {
     override init() {
         super.init()
-        sprite = SKSpriteNode(imageNamed: "turtle1")
-        sprite.size = CGSize(width: 48, height: 60)
+            sprite = SKSpriteNode(imageNamed: "turtle1")
+        sprite.size = CGSize(width: GraphConsts.tileWidth, height: GraphConsts.tileHeight)
         sprite.zPosition = 75
     }
 
@@ -59,13 +59,11 @@ class Enemy: Actor {
     }
 }
 
-
 class Bullet: Actor {
-    
     override init() {
         super.init()
         sprite = SKSpriteNode(imageNamed: "bullet")
-        sprite.size = CGSize(width: 48, height: 60)
+        sprite.size = CGSize(width: GraphConsts.tileWidth, height: GraphConsts.tileHeight)
         sprite.zPosition = 100
     }
 }
