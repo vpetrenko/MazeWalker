@@ -285,10 +285,10 @@ class GameScene: SKScene {
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
         if newPlayerDirection != playerDirection {
-            if (Int(GraphConsts.halfTileHeight + playerSprite.position.x) % GraphConsts.tileWidth) == 0 && (newPlayerDirection == .up || newPlayerDirection == .down) {
+            if (Int(GraphConsts.halfTileWidth + playerSprite.position.x) % GraphConsts.tileWidth) == 0 && (newPlayerDirection == .up || newPlayerDirection == .down) {
                 playerDirection = newPlayerDirection
             }
-            if (Int(GraphConsts.halfTileWidth + playerSprite.position.y) % GraphConsts.tileHeight) == 0 && (newPlayerDirection == .left || newPlayerDirection == .right) {
+            if (Int(GraphConsts.halfTileHeight + playerSprite.position.y) % GraphConsts.tileHeight) == 0 && (newPlayerDirection == .left || newPlayerDirection == .right) {
                 playerDirection = newPlayerDirection
             }
             switch(playerDirection) {
@@ -314,7 +314,7 @@ class GameScene: SKScene {
             
             let tileX = (newX - GraphConsts.halfTileWidth) / CGFloat(GraphConsts.tileWidth)
             let tileY = (newY - GraphConsts.halfTileHeight) / CGFloat(GraphConsts.tileHeight)
-            
+
             let intX = playerDirection == .right ? Int(ceil(tileX)) : Int(tileX)
             let intY = playerDirection == .up ? Int(ceil(tileY)) : Int(tileY)
             
