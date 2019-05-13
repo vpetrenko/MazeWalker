@@ -9,7 +9,7 @@
 import SpriteKit
 import GameplayKit
 
-enum ActiveItem {
+enum ActiveItem: Equatable {
     case none
     case crown(sprite: SKSpriteNode?)
     case ringR(sprite: SKSpriteNode?)
@@ -249,7 +249,7 @@ class GameScene: SKScene {
             if playerCanGo {
                 playerSprite.position.x = newX
                 playerSprite.position.y = newY
-                if intX >= 39 {
+                if intX >= level.levelWidth - 1 {
                     let reveal = SKTransition.flipHorizontal(withDuration: 0.5)
                     let gameOverScene = GameOverScene(size: self.size, won: true, score: playerScore, tags: playerTags)
                     view?.presentScene(gameOverScene, transition: reveal)

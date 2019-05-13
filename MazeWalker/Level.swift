@@ -9,6 +9,11 @@
 import Foundation
 import SpriteKit
 
+struct Cell: Hashable {
+    var x: Int = 0
+    var y: Int = 0
+}
+
 class Level {
     enum LevelItem {
         case wall
@@ -36,13 +41,105 @@ class Level {
 11111111111111111111111111111111111111111
 """
     
-    private var level : [[LevelItem]]
+    private var level = [[LevelItem]]()
+    private var items = [[ActiveItem]]()
     private var width = 0
     private var height = 0
     
-    private var items : [[ActiveItem]]
+    var levelWidth: Int {
+        return width
+    }
     
     init?() {
+        generateLevel()
+    }
+
+    private func generateLevel() {
+        width = 39
+        height = 19
+        level = Array(repeating: Array(repeating: .space, count: height), count: width)
+        items = Array(repeating: Array(repeating: .none, count: height), count: width)
+
+        var visited = Array(repeating: Array(repeating: false, count: height), count: width)
+        for i in 0..<width {
+            for j in 0..<height {
+                if (i % 2 != 0 && j % 2 != 0 && i > 0 && j > 0 && i < width - 1 && j < height - 1) {
+                    level[i][j] = .space
+                } else {
+                    level[i][j] = .wall
+                    visited[i][j] = true
+                }
+            }
+        }
+
+        func allVisited() -> Bool {
+            for i in 1..<width - 1 {
+                for j in 1..<height - 1 {
+                    if !visited[i][j] {
+                        return false
+                    }
+                }
+            }
+            return true
+        }
+        let directs = [(-2, 0), (0, -2), (2, 0), (0, 2)]
+        var visStack = [Cell]()
+
+        let start = Cell(x: 1, y: 1)
+        visited[start.x][start.y] = true
+        var current = start
+        repeat {
+            var candidates = [Cell]()
+            for d in directs {
+                let chX = current.x + d.0
+                let chY = current.y + d.1
+                if chX >= 0 && chX < width && chY >= 0 && chY < height && !visited[chX][chY] {
+                    candidates.append(Cell(x: chX, y: chY))
+                }
+            }
+            if (candidates.count > 0) {
+                visStack.append(current)
+                let c = Int.random(in: 0..<candidates.count)
+                let rX = (candidates[c].x + current.x) / 2
+                let rY = (candidates[c].y + current.y) / 2
+                level[rX][rY] = .space
+                current = candidates[c]
+                visited[current.x][current.y] = true
+            } else {
+                if !visStack.isEmpty {
+                    current = visStack.popLast()!
+                } else {
+                    break
+                }
+            }
+        } while (!allVisited())
+        
+        var y = height / 2
+        while level[width - 2][y] == .wall {
+            y += 1
+        }
+        items[width - 1][y] = .door(sprite: nil)
+        level[width - 1][y] = .space
+        
+        func generateEmptyCell() -> Cell {
+            var x = 0
+            var y = 0
+            repeat {
+                x = Int.random(in: 1..<width - 1)
+                y = Int.random(in: 1..<height - 1)
+            } while (level[x][y] == .wall || items[x][y] != ActiveItem.none)
+            return Cell(x: x, y: y)
+        }
+        
+        self[generateEmptyCell()] = .key(sprite: nil)
+        self[generateEmptyCell()] = .ringR(sprite: nil)
+        self[generateEmptyCell()] = .ringG(sprite: nil)
+        self[generateEmptyCell()] = .ringB(sprite: nil)
+        self[generateEmptyCell()] = .crown(sprite: nil)
+        self[generateEmptyCell()] = .crown(sprite: nil)
+    }
+    
+    private func loadLevel() {
         for ch in levelMap {
             if ch != "\n" {
                 width += 1
@@ -83,17 +180,29 @@ class Level {
             x += 1
         }
     }
-
+    
     func isEmpty(_ x: Int, _ y: Int) -> Bool {
+        guard x < width && y < height else { return false }
+        
         return level[x][y] == .space
     }
     
     func getItem(_ x:Int, _ y: Int) -> ActiveItem {
+        guard x < width && y < height else { return .none }
         return items[x][y]
     }
     
     func removeItem(_ x:Int, _ y: Int) {
         items[x][y] = .none
+    }
+    
+    subscript(c: Cell) -> ActiveItem {
+        get {
+            return items[c.x][c.y]
+        }
+        set {
+            items[c.x][c.y] = newValue
+        }
     }
     
     func initSprites(in scene: SKScene) {
