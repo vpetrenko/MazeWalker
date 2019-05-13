@@ -46,10 +46,10 @@ class GameScene: SKScene {
     private var bullets = Set<Bullet>()
 
     private let directs: [Direction: (Double, Double)] = [
-        .left: (-2.0, 0),
-        .right: (2.0, 0),
-        .up: (0, 2.0),
-        .down: (0, -2.0),
+        .left: (-3.0, 0),
+        .right: (3.0, 0),
+        .up: (0, 3.0),
+        .down: (0, -3.0),
     ]
     
     private var playerDirection: Direction
