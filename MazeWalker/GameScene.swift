@@ -9,11 +9,6 @@
 import SpriteKit
 import GameplayKit
 
-enum LevelItem {
-    case wall
-    case space
-}
-
 enum ActiveItem {
     case none
     case crown(sprite: SKSpriteNode?)
@@ -36,35 +31,9 @@ class GameScene: SKScene {
     private var spinnyNode : SKShapeNode?
     private var rockets = [SKSpriteNode]()
 
-    private var walls = [SKSpriteNode]()
-    
     private var enemies = Set<Enemy>()
 
-    private var levelMap = """
-11111111111111111111111111111111111111111
-1        1          1                  11
-1 1 1K1  1  1111111 1     111    1     11
-1 1 1111 1  1     1 1 11    1 1111  1  11
-1 1    1 11 11    1 GBR1    1       1  11
-1 1  1       11   1 1111  1 1   11111  11
-1 1  1 11111  11111 1     1            11
-1    1   1C1   111    11  1 11111      11
-1 111111   1          1   1        1   11
-1     1   111B11 1  1 1 11111   1  1   D1
-11111 1 1   111C 1  1 1    11   1  1   11
-1       111 1G1111  1      J1   1      11
-1 1111111   1 11    111111 11          11
-1  1   1  1 1     1        11 11111    11
-1  1C1        11111 111                11
-1 1111 1111 1111111   111  1111   1    11
-1      1            1                  11
-11111111111111111111111111111111111111111
-"""
-
-    private var level : [[LevelItem]]
-    private var items : [[ActiveItem]]
-    private var width = 0
-    private var height = 0
+    private let level: Level
 
     private var px = 0
     private var py = 0
@@ -76,7 +45,6 @@ class GameScene: SKScene {
 
     private var bullets = Set<Bullet>()
 
-    
     private let directs: [Direction: (Double, Double)] = [
         .left: (-2.0, 0),
         .right: (2.0, 0),
@@ -88,44 +56,10 @@ class GameScene: SKScene {
     private var newPlayerDirection: Direction
 
     required init?(coder aDecoder: NSCoder) {
-        for ch in levelMap {
-            if ch != "\n" {
-                width += 1
-            } else {
-                break
-            }
-        }
-        height = levelMap.reduce(0, { $1 == "\n" ? $0 + 1 : $0 } ) + 1
-        
-        level = Array(repeating: Array(repeating: .space, count: height), count: width)
-        items = Array(repeating: Array(repeating: .none, count: height), count: width)
-        var x = 0
-        var y = height - 1
-        for ch in levelMap {
-            switch (ch) {
-            case "\n":
-                x = -1
-                y -= 1
-            case "1":
-                level[x][y] = .wall
-            case "D":
-                items[x][y] = .door(sprite: nil)
-            case "C":
-                items[x][y] = .crown(sprite: nil)
-            case "R":
-                items[x][y] = .ringR(sprite: nil)
-            case "G":
-                items[x][y] = .ringG(sprite: nil)
-            case "B":
-                items[x][y] = .ringB(sprite: nil)
-            case "K":
-                items[x][y] = .key(sprite: nil)
-            case " ":
-                level[x][y] = .space
-            default:
-                level[x][y] = .space
-            }
-            x += 1
+        if let level = Level() {
+            self.level = level
+        } else {
+            return nil
         }
         playerDirection = .right
         newPlayerDirection = .right
@@ -162,55 +96,7 @@ class GameScene: SKScene {
         playerSprite.zPosition = 100
         self.addChild(playerSprite)
 
-        for (x, col) in level.enumerated() {
-            for (y, t) in col.enumerated() {
-                var title : SKSpriteNode
-                switch (t) {
-                case .wall:
-                    title = SKSpriteNode(imageNamed: "wall1")
-                case .space:
-                    title = SKSpriteNode(imageNamed: "space")
-                }
-                title.size = CGSize(width: GraphConsts.tileWidth, height: GraphConsts.tileHeight)
-                title.position = CGPoint(x: GraphConsts.halfTileWidth + CGFloat(x * GraphConsts.tileWidth), y: GraphConsts.halfTileHeight + CGFloat(y * GraphConsts.tileHeight))
-                self.addChild(title)
-                self.walls.append(title)
-            }
-        }
-        for (x, col) in items.enumerated() {
-            for (y, t) in col.enumerated() {
-                var item = SKSpriteNode()
-                var gotItem = true
-                switch (t) {
-                case .crown:
-                    item = SKSpriteNode(imageNamed: "crown")
-                    items[x][y] = .crown(sprite: item)
-                case .ringR:
-                    item = SKSpriteNode(imageNamed: "ringR")
-                    items[x][y] = .ringR(sprite: item)
-                case .ringG:
-                    item = SKSpriteNode(imageNamed: "ringG")
-                    items[x][y] = .ringG(sprite: item)
-                case .ringB:
-                    item = SKSpriteNode(imageNamed: "ringB")
-                    items[x][y] = .ringB(sprite: item)
-                case .key:
-                    item = SKSpriteNode(imageNamed: "key")
-                    items[x][y] = .key(sprite: item)
-                case .door:
-                    item = SKSpriteNode(imageNamed: "door")
-                    items[x][y] = .door(sprite: item)
-                default:
-                    gotItem = false
-                }
-                if gotItem {
-                    item.size = CGSize(width: GraphConsts.tileWidth, height: GraphConsts.tileHeight)
-                    item.position = CGPoint(x: GraphConsts.halfTileWidth + CGFloat(x * GraphConsts.tileWidth), y: GraphConsts.halfTileHeight + CGFloat(y * GraphConsts.tileHeight))
-                    item.zPosition = 50
-                    self.addChild(item)
-                }
-            }
-        }
+        level.initSprites(in: self)
         
         setPlayerKey(playerHasKey)
         let backgroundMusic = SKAudioNode(fileNamed: "ByTheWall.mp3")
@@ -318,39 +204,39 @@ class GameScene: SKScene {
             let intX = playerDirection == .right ? Int(ceil(tileX)) : Int(tileX)
             let intY = playerDirection == .up ? Int(ceil(tileY)) : Int(tileY)
             
-            var playerCanGo : Bool = level[intX][intY] == .space
+            var playerCanGo = level.isEmpty(intX, intY)
             
-            switch (items[intX][intY]) {
+            switch (level.getItem(intX, intY)) {
             case .crown(let sprite):
                 playerScore += 100
                 sprite?.removeFromParent()
-                items[intX][intY] = .none
+                level.removeItem(intX, intY)
                 run(SKAction.playSoundFileNamed("Water 003.wav", waitForCompletion: false))
             case .ringR(let sprite):
                 playerScore += 20
                 sprite?.removeFromParent()
-                items[intX][intY] = .none
+                level.removeItem(intX, intY)
                 run(SKAction.playSoundFileNamed("Water 003.wav", waitForCompletion: false))
             case .ringG(let sprite):
                 playerScore += 20
                 sprite?.removeFromParent()
-                items[intX][intY] = .none
+                level.removeItem(intX, intY)
                 run(SKAction.playSoundFileNamed("Water 003.wav", waitForCompletion: false))
             case .ringB(let sprite):
                 playerScore += 20
                 sprite?.removeFromParent()
-                items[intX][intY] = .none
+                level.removeItem(intX, intY)
                 run(SKAction.playSoundFileNamed("Water 003.wav", waitForCompletion: false))
             case .key(let sprite):
                 sprite?.removeFromParent()
-                items[intX][intY] = .none
+                level.removeItem(intX, intY)
                 playerHasKey = true
                 setPlayerKey(playerHasKey)
                 run(SKAction.playSoundFileNamed("Laser 012.wav", waitForCompletion: false))
             case .door(let sprite):
                 if playerHasKey {
                     sprite?.removeFromParent()
-                    items[intX][intY] = .none
+                    level.removeItem(intX, intY)
                     playerHasKey = false
                     setPlayerKey(playerHasKey)
                     run(SKAction.playSoundFileNamed("Laser 012.wav", waitForCompletion: false))
@@ -390,7 +276,7 @@ class GameScene: SKScene {
                 let intX = e.direction == .right ? Int(ceil(tileX)) : Int(tileX)
                 let intY = e.direction == .up ? Int(ceil(tileY)) : Int(tileY)
                 
-                if level[intX][intY] == .space {
+                if level.isEmpty(intX, intY) {
                     e.position.x = newX
                     e.position.y = newY
                 }
@@ -445,7 +331,7 @@ class GameScene: SKScene {
                     }
                 }
                 
-                if level[intX][intY] == .space {
+                if level.isEmpty(intX, intY) {
                     e.position.x = newX
                     e.position.y = newY
                 } else {

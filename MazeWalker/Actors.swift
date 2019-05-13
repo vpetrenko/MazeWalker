@@ -48,7 +48,7 @@ class Actor: Hashable {
 class Enemy: Actor {
     override init() {
         super.init()
-            sprite = SKSpriteNode(imageNamed: "turtle1")
+        sprite = SKSpriteNode(imageNamed: "turtle1")
         sprite.size = CGSize(width: GraphConsts.tileWidth, height: GraphConsts.tileHeight)
         sprite.zPosition = 75
     }

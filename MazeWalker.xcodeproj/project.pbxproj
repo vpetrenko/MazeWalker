@@ -26,6 +26,7 @@
 		EE1D5319226632EC006883AD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EE1D5317226632EC006883AD /* Main.storyboard */; };
 		EE65BEA6228432FE00D4B714 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE65BEA5228432FE00D4B714 /* Constants.swift */; };
 		EE6D192B227DA2CF006CC96A /* Laser 012.wav in Resources */ = {isa = PBXBuildFile; fileRef = EE6D192A227DA2CF006CC96A /* Laser 012.wav */; };
+		EE7F34422289F9A800D3AA4C /* Level.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE7F34412289F9A800D3AA4C /* Level.swift */; };
 		EECD74382281E70D00B641F4 /* SparkParticles.sks in Resources */ = {isa = PBXBuildFile; fileRef = EECD74372281E70D00B641F4 /* SparkParticles.sks */; };
 /* End PBXBuildFile section */
 
@@ -52,6 +53,7 @@
 		EE1D531B226632EC006883AD /* MazeWalker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MazeWalker.entitlements; sourceTree = "<group>"; };
 		EE65BEA5228432FE00D4B714 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		EE6D192A227DA2CF006CC96A /* Laser 012.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "Laser 012.wav"; sourceTree = "<group>"; };
+		EE7F34412289F9A800D3AA4C /* Level.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Level.swift; sourceTree = "<group>"; };
 		EECD74372281E70D00B641F4 /* SparkParticles.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = SparkParticles.sks; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -107,6 +109,7 @@
 				EE1D530F226632EB006883AD /* Actions.sks */,
 				EECD74372281E70D00B641F4 /* SparkParticles.sks */,
 				EE65BEA5228432FE00D4B714 /* Constants.swift */,
+				EE7F34412289F9A800D3AA4C /* Level.swift */,
 				EE1D5311226632EB006883AD /* GameScene.swift */,
 				EE0744E7227C8A00000989AF /* GameOverScene.swift */,
 				EE0744D6227C6D8D000989AF /* Actors.swift */,
@@ -202,6 +205,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EE0744E8227C8A00000989AF /* GameOverScene.swift in Sources */,
+				EE7F34422289F9A800D3AA4C /* Level.swift in Sources */,
 				EE0744D7227C6D8D000989AF /* Actors.swift in Sources */,
 				EE1D5314226632EB006883AD /* ViewController.swift in Sources */,
 				EE1D5312226632EB006883AD /* GameScene.swift in Sources */,
