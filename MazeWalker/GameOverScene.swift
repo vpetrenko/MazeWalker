@@ -26,15 +26,33 @@ class GameOverScene: SKScene {
             + "  Score: \(score). Press any key to continue."
         
         if won {
-            run(SKAction.repeatForever(SKAction.sequence([SKAction.wait(forDuration: 0.5), SKAction.run() { [weak self] in
+            let firework = SKAction.run() { [weak self] in
                 guard let self = self else { return }
-                    if let emitter = SKEmitterNode(fileNamed: "SparkParticles") {
-                        let sx = Int.random(in: 100..<Int(size.width) - 100)
-                        let sy = Int.random(in: 100..<Int(size.height) - 100)
-                        emitter.position = CGPoint(x: sx, y: sy)
-                        self.addChild(emitter)
-                    }
-                }])))
+                
+                let emitter = SKEmitterNode(fileNamed: "SparkParticles")!
+                let addEmitter = SKAction.run() { [weak self] in
+                    guard let self = self else { return }
+                    
+                    let sx = Int.random(in: 100..<Int(size.width) - 100)
+                    let sy = Int.random(in: 100..<Int(size.height) - 100)
+                    emitter.position = CGPoint(x: sx, y: sy)
+                    self.addChild(emitter)
+                }
+                let emitterDuration = emitter.particleLifetime
+
+                let waitEmitter = SKAction.wait(forDuration: Double(emitterDuration))
+                let removeEmitter = SKAction.run() { [weak emitter] in
+                    guard let emitter = emitter else { return }
+                    emitter.removeFromParent()
+                }
+
+                let sequence = SKAction.sequence([addEmitter, waitEmitter, removeEmitter])
+                self.run(sequence)
+            }
+            
+            run(SKAction.repeatForever(SKAction.sequence([SKAction.wait(forDuration: 0.5), firework])))
+            
+            
         }
         
         run(SKAction.sequence([
