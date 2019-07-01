@@ -130,10 +130,10 @@ class GameScene: SKScene {
     
     override func keyDown(with event: NSEvent) {
         switch Int(event.keyCode) {
-        case 0x31:
+//        case 0x31:
 //            playerHasKey = !playerHasKey
 //            setPlayerKey(playerHasKey)
-            break
+//            break
             
         case KeyCodes.up:
             newPlayerDirection = .up
@@ -255,7 +255,7 @@ class GameScene: SKScene {
                     view?.presentScene(gameOverScene, transition: reveal)
                 }
             }
-            playerSprite.texture = self.walkFrames[Int(newX * 0.05) % 2]
+            playerSprite.texture = self.walkFrames[Int(newX * 0.04 + newY * 0.04) % 2]
 
 
             
