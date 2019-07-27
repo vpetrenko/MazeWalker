@@ -99,9 +99,6 @@ class GameScene: SKScene {
         level.initSprites(in: self)
         
         setPlayerKey(playerHasKey)
-        let backgroundMusic = SKAudioNode(fileNamed: "ByTheWall.mp3")
-        backgroundMusic.autoplayLooped = true
-        addChild(backgroundMusic)
     }
     
     func setPlayerKey(_ key: Bool) {
